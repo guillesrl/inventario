@@ -22,7 +22,7 @@ export default function Sidebar({ user }: Props) {
   return (
     <aside className="w-56 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col">
       <div className="px-5 py-5 border-b border-gray-100 dark:border-gray-700">
-        <span className="font-bold text-gray-900 dark:text-white">📦 Inventario</span>
+        <span className="font-bold text-gray-900 dark:text-white">⭐ Inventario</span>
       </div>
 
       <nav className="flex-1 px-3 py-4 space-y-1">
