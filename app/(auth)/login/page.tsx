@@ -17,11 +17,11 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="bg-white rounded-2xl shadow p-8 w-full max-w-sm space-y-6">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow p-8 w-full max-w-sm space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Inventario SaaS</h1>
-          <p className="text-gray-500 text-sm mt-1">Inicia sesión para continuar</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Inventario SaaS</h1>
+          <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Inicia sesión para continuar</p>
         </div>
 
         {sent ? (
@@ -35,7 +35,7 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <button
                 type="submit"
@@ -48,16 +48,16 @@ export default function LoginPage() {
 
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-200" />
+                <div className="w-full border-t border-gray-200 dark:border-gray-600" />
               </div>
-              <div className="relative flex justify-center text-xs text-gray-400">
-                <span className="bg-white px-2">o</span>
+              <div className="relative flex justify-center text-xs text-gray-400 dark:text-gray-500">
+                <span className="bg-white dark:bg-gray-800 px-2">o</span>
               </div>
             </div>
 
             <button
               onClick={() => signIn('google', { callbackUrl: '/dashboard' })}
-              className="w-full border border-gray-300 hover:bg-gray-50 rounded-lg py-2 text-sm font-medium transition-colors flex items-center justify-center gap-2"
+              className="w-full border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 dark:text-white rounded-lg py-2 text-sm font-medium transition-colors flex items-center justify-center gap-2"
             >
               <svg className="w-4 h-4" viewBox="0 0 24 24">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />

@@ -1,11 +1,11 @@
 export default function ReportsPage() {
   return (
     <div className="space-y-5">
-      <h1 className="text-2xl font-bold text-gray-900">Reportes</h1>
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Reportes</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="bg-white rounded-xl shadow-sm p-5 space-y-3">
-          <h2 className="font-semibold text-gray-800">Inventario CSV</h2>
-          <p className="text-sm text-gray-500">Exporta todos los productos con precio y stock.</p>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5 space-y-3">
+          <h2 className="font-semibold text-gray-800 dark:text-gray-200">Inventario CSV</h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Exporta todos los productos con precio y stock.</p>
           <a
             href="/api/reports?type=inventory&format=csv"
             download
@@ -14,9 +14,9 @@ export default function ReportsPage() {
             Descargar CSV
           </a>
         </div>
-        <div className="bg-white rounded-xl shadow-sm p-5 space-y-3">
-          <h2 className="font-semibold text-gray-800">Ventas CSV</h2>
-          <p className="text-sm text-gray-500">Exporta el historial completo de ventas.</p>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5 space-y-3">
+          <h2 className="font-semibold text-gray-800 dark:text-gray-200">Ventas CSV</h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Exporta el historial completo de ventas.</p>
           <a
             href="/api/reports?type=sales&format=csv"
             download

@@ -74,33 +74,36 @@ export default function ProductForm({ categories, product }: Props) {
     router.refresh()
   }
 
+  const inputClass = "w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+  const labelClass = "text-sm font-medium text-gray-700 dark:text-gray-300"
+
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm p-6 space-y-4">
+    <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 space-y-4">
       {error && <p className="text-red-600 text-sm">{error}</p>}
 
       <div className="space-y-1">
-        <label className="text-sm font-medium text-gray-700">Nombre *</label>
+        <label className={labelClass}>Nombre *</label>
         <input
           value={form.name}
           onChange={(e) => set('name', e.target.value)}
           required
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className={inputClass}
         />
       </div>
 
       <div className="space-y-1">
-        <label className="text-sm font-medium text-gray-700">Descripción</label>
+        <label className={labelClass}>Descripción</label>
         <textarea
           value={form.description}
           onChange={(e) => set('description', e.target.value)}
           rows={3}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className={inputClass}
         />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-1">
-          <label className="text-sm font-medium text-gray-700">Precio *</label>
+          <label className={labelClass}>Precio *</label>
           <input
             type="number"
             step="0.01"
@@ -108,28 +111,28 @@ export default function ProductForm({ categories, product }: Props) {
             value={form.price}
             onChange={(e) => set('price', e.target.value)}
             required
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className={inputClass}
           />
         </div>
         <div className="space-y-1">
-          <label className="text-sm font-medium text-gray-700">Stock *</label>
+          <label className={labelClass}>Stock *</label>
           <input
             type="number"
             min="0"
             value={form.stock}
             onChange={(e) => set('stock', e.target.value)}
             required
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className={inputClass}
           />
         </div>
       </div>
 
       <div className="space-y-1">
-        <label className="text-sm font-medium text-gray-700">Categoría</label>
+        <label className={labelClass}>Categoría</label>
         <select
           value={form.categoryId}
           onChange={(e) => set('categoryId', e.target.value)}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className={inputClass}
         >
           <option value="">Sin categoría</option>
           {categories.map((c) => (
@@ -150,7 +153,7 @@ export default function ProductForm({ categories, product }: Props) {
           <button
             type="button"
             onClick={handleDelete}
-            className="px-4 py-2 text-sm text-red-600 border border-red-200 hover:bg-red-50 rounded-lg transition-colors"
+            className="px-4 py-2 text-sm text-red-600 border border-red-200 dark:border-red-800 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
           >
             Eliminar
           </button>

@@ -44,18 +44,20 @@ export default function SaleForm({ products }: { products: Product[] }) {
     setLoading(false)
   }
 
+  const inputClass = "w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4 max-w-md">
       {error && <p className="text-red-600 text-sm">{error}</p>}
       {success && <p className="text-green-600 text-sm">{success}</p>}
 
       <div className="space-y-1">
-        <label className="text-sm font-medium text-gray-700">Producto</label>
+        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Producto</label>
         <select
           value={productId}
           onChange={(e) => setProductId(e.target.value)}
           required
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className={inputClass}
         >
           <option value="">Selecciona un producto</option>
           {products.map((p) => (
@@ -67,7 +69,7 @@ export default function SaleForm({ products }: { products: Product[] }) {
       </div>
 
       <div className="space-y-1">
-        <label className="text-sm font-medium text-gray-700">Cantidad</label>
+        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Cantidad</label>
         <input
           type="number"
           min="1"
@@ -75,13 +77,13 @@ export default function SaleForm({ products }: { products: Product[] }) {
           value={quantity}
           onChange={(e) => setQuantity(e.target.value)}
           required
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className={inputClass}
         />
       </div>
 
       {selected && (
-        <p className="text-sm text-gray-500">
-          Total estimado: <strong>${(selected.price * Number(quantity)).toFixed(2)}</strong>
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          Total estimado: <strong className="text-gray-900 dark:text-white">${(selected.price * Number(quantity)).toFixed(2)}</strong>
         </p>
       )}
 
