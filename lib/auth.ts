@@ -4,18 +4,25 @@ import EmailProvider from 'next-auth/providers/email'
 import { PrismaAdapter } from '@auth/prisma-adapter'
 import { prisma } from './db'
 
+const providers = []
+
+if (process.env.EMAIL_SERVER && process.env.EMAIL_FROM) {
+  providers.push(EmailProvider({
+    server: process.env.EMAIL_SERVER,
+    from: process.env.EMAIL_FROM,
+  }))
+}
+
+if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+  providers.push(GoogleProvider({
+    clientId: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+  }))
+}
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
-  providers: [
-    EmailProvider({
-      server: process.env.EMAIL_SERVER,
-      from: process.env.EMAIL_FROM,
-    }),
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID as string,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
-    }),
-  ],
+  providers,
   pages: {
     signIn: '/login',
     verifyRequest: '/verify-request',
