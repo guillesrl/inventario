@@ -8,7 +8,7 @@ Sistema de gestión de inventario para pequeñas tiendas. Construido con Next.js
 - TypeScript
 - Tailwind CSS v4 (dark mode por defecto)
 - Prisma 7 con driver adapter pg
-- Neon Serverless Postgres
+- PostgreSQL (cualquier proveedor compatible)
 - NextAuth v5 (Google + Email magic link)
 - Recharts
 
@@ -20,7 +20,7 @@ Sistema de gestión de inventario para pequeñas tiendas. Construido con Next.js
 - Alertas automáticas de stock bajo (≤5 unidades)
 - Registro de ventas con historial
 - Categorías con contador de productos asignados
-- Exportación de reportes en CSV (inventario y ventas)
+- Exportación de reportes en CSV y PDF (inventario y ventas)
 - Soft-delete en productos
 - Dark mode por defecto
 
@@ -29,8 +29,7 @@ Sistema de gestión de inventario para pequeñas tiendas. Construido con Next.js
 Crea un archivo `.env` con:
 
 ```env
-DATABASE_URL=postgresql://...pooler...
-DIRECT_URL=postgresql://...sin-pooler...
+DATABASE_URL=postgresql://user:password@localhost:5432/inventario
 
 NEXTAUTH_URL=http://localhost:3000
 NEXTAUTH_SECRET=tu-secret
