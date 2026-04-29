@@ -9,6 +9,7 @@ const links = [
   { href: '/products', label: 'Productos', icon: '📦' },
   { href: '/categories', label: 'Categorías', icon: '🏷️' },
   { href: '/sales', label: 'Ventas', icon: '🛒' },
+  { href: '/alerts', label: 'Alertas', icon: '🔔' },
   { href: '/reports', label: 'Reportes', icon: '📄' },
 ]
 

@@ -10,7 +10,13 @@ export default async function CategoriesPage() {
   const categories = await prisma.category.findMany({
     where: { userId },
     orderBy: { name: 'asc' },
-    include: { _count: { select: { products: true } } },
+    include: {
+      _count: { select: { products: true } },
+      children: {
+        orderBy: { name: 'asc' },
+        include: { _count: { select: { products: true } } },
+      },
+    },
   })
 
   return (
@@ -19,7 +25,7 @@ export default async function CategoriesPage() {
 
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5 space-y-4">
         <h2 className="text-base font-semibold text-gray-700 dark:text-gray-200">Nueva categoría</h2>
-        <CategoryForm />
+        <CategoryForm categories={categories} />
       </div>
 
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5">

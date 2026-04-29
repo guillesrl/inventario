@@ -1,33 +1,84 @@
 import Link from 'next/link'
+import { Suspense } from 'react'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
+import ProductFilters from '@/components/ProductFilters'
+import ImportProductsModal from '@/components/ImportProductsModal'
 
-export default async function ProductsPage() {
+const PAGE_SIZE = 20
+
+export default async function ProductsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string; q?: string; category?: string }>
+}) {
   const session = await auth()
   const userId = session!.user.id
+  const { page: pageParam, q, category } = await searchParams
 
-  const products = await prisma.product.findMany({
-    where: { userId, deletedAt: null },
-    include: { category: { select: { name: true } } },
-    orderBy: { createdAt: 'desc' },
-    take: 20,
-  })
+  const page = Math.max(1, Number(pageParam ?? 1))
+  const skip = (page - 1) * PAGE_SIZE
+
+  const where = {
+    userId,
+    deletedAt: null as null,
+    ...(q ? { name: { contains: q, mode: 'insensitive' as const } } : {}),
+    ...(category ? { categoryId: category } : {}),
+  }
+
+  const [products, total, categories] = await Promise.all([
+    prisma.product.findMany({
+      where,
+      include: { category: { select: { name: true } } },
+      orderBy: { createdAt: 'desc' },
+      skip,
+      take: PAGE_SIZE,
+    }),
+    prisma.product.count({ where }),
+    prisma.category.findMany({
+      where: { userId },
+      orderBy: { name: 'asc' },
+      select: { id: true, name: true },
+    }),
+  ])
+
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
+
+  function buildUrl(params: Record<string, string | number | null | undefined>) {
+    const p = new URLSearchParams()
+    for (const [k, v] of Object.entries(params)) {
+      if (v != null && v !== '') p.set(k, String(v))
+    }
+    const qs = p.toString()
+    return qs ? `/products?${qs}` : '/products'
+  }
 
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Productos</h1>
-        <Link
-          href="/products/create"
-          className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
-        >
-          + Agregar producto
-        </Link>
+        <div className="flex items-center gap-2">
+          <ImportProductsModal />
+          <Link
+            href="/products/create"
+            className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+          >
+            + Agregar producto
+          </Link>
+        </div>
       </div>
+
+      <Suspense fallback={<div className="h-9 w-80 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse" />}>
+        <ProductFilters categories={categories} />
+      </Suspense>
 
       {products.length === 0 ? (
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-10 text-center text-gray-400 dark:text-gray-500">
-          No hay productos. <Link href="/products/create" className="text-blue-600 hover:underline">Agrega el primero</Link>.
+          {q || category ? (
+            'Sin resultados para los filtros aplicados.'
+          ) : (
+            <>No hay productos. <Link href="/products/create" className="text-blue-600 hover:underline">Agrega el primero</Link>.</>
+          )}
         </div>
       ) : (
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
@@ -53,10 +104,7 @@ export default async function ProductsPage() {
                     </span>
                   </td>
                   <td className="px-4 py-3">
-                    <Link
-                      href={`/products/${p.id}`}
-                      className="text-blue-600 hover:underline text-xs"
-                    >
+                    <Link href={`/products/${p.id}`} className="text-blue-600 hover:underline text-xs">
                       Editar
                     </Link>
                   </td>
@@ -64,6 +112,36 @@ export default async function ProductsPage() {
               ))}
             </tbody>
           </table>
+
+          <div className="flex items-center justify-between px-4 py-3 border-t border-gray-100 dark:border-gray-700">
+            <p className="text-xs text-gray-400 dark:text-gray-500">
+              {total} producto{total !== 1 ? 's' : ''} · Página {page} de {totalPages}
+            </p>
+            <div className="flex gap-2">
+              <Link
+                href={buildUrl({ page: page - 1, q, category })}
+                aria-disabled={page <= 1}
+                className={`text-xs px-3 py-1.5 rounded-lg border transition-colors ${
+                  page <= 1
+                    ? 'pointer-events-none opacity-30 border-gray-200 dark:border-gray-700 text-gray-400 dark:text-gray-500'
+                    : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                }`}
+              >
+                ← Anterior
+              </Link>
+              <Link
+                href={buildUrl({ page: page + 1, q, category })}
+                aria-disabled={page >= totalPages}
+                className={`text-xs px-3 py-1.5 rounded-lg border transition-colors ${
+                  page >= totalPages
+                    ? 'pointer-events-none opacity-30 border-gray-200 dark:border-gray-700 text-gray-400 dark:text-gray-500'
+                    : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                }`}
+              >
+                Siguiente →
+              </Link>
+            </div>
+          </div>
         </div>
       )}
     </div>

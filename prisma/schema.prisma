@@ -70,7 +70,10 @@ model Category {
   id        String    @id @default(cuid())
   name      String
   userId    String    @map("user_id")
+  parentId  String?   @map("parent_id")
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parent    Category?  @relation("CategoryTree", fields: [parentId], references: [id], onDelete: SetNull)
+  children  Category[] @relation("CategoryTree")
   products  Product[]
 
   createdAt DateTime @default(now())

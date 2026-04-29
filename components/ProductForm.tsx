@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 interface Category {
   id: string
   name: string
+  parentId?: string | null
 }
 
 interface Props {
@@ -135,9 +136,24 @@ export default function ProductForm({ categories, product }: Props) {
           className={inputClass}
         >
           <option value="">Sin categoría</option>
-          {categories.map((c) => (
-            <option key={c.id} value={c.id}>{c.name}</option>
-          ))}
+          {(() => {
+            const topLevel = categories.filter((c) => !c.parentId)
+            const childrenOf = (id: string) => categories.filter((c) => c.parentId === id)
+            return topLevel.map((parent) => {
+              const kids = childrenOf(parent.id)
+              if (kids.length === 0) {
+                return <option key={parent.id} value={parent.id}>{parent.name}</option>
+              }
+              return (
+                <optgroup key={parent.id} label={parent.name}>
+                  <option value={parent.id}>{parent.name} (general)</option>
+                  {kids.map((child) => (
+                    <option key={child.id} value={child.id}>{'  '}{child.name}</option>
+                  ))}
+                </optgroup>
+              )
+            })
+          })()}
         </select>
       </div>
 
