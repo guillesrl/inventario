@@ -1,30 +1,53 @@
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import StatCard from '@/components/StatCard'
+import SalesChart from '@/components/SalesChart'
 
 export default async function DashboardPage() {
   const session = await auth()
   const userId = session!.user.id
 
-  const [totalProducts, products, totalSales, activeAlerts] = await Promise.all([
-    prisma.product.count({ where: { userId, deletedAt: null } }),
-    prisma.product.findMany({
-      where: { userId, deletedAt: null },
-      select: { price: true, stock: true },
-    }),
-    prisma.sale.aggregate({ where: { userId }, _sum: { total: true } }),
-    prisma.alert.count({ where: { userId, isResolved: false } }),
-  ])
+  const since = new Date()
+  since.setDate(since.getDate() - 13)
+  since.setHours(0, 0, 0, 0)
+
+  const [totalProducts, products, totalSales, activeAlerts, recentSales, chartSales] =
+    await Promise.all([
+      prisma.product.count({ where: { userId, deletedAt: null } }),
+      prisma.product.findMany({
+        where: { userId, deletedAt: null },
+        select: { price: true, stock: true },
+      }),
+      prisma.sale.aggregate({ where: { userId }, _sum: { total: true } }),
+      prisma.alert.count({ where: { userId, isResolved: false } }),
+      prisma.sale.findMany({
+        where: { userId },
+        take: 5,
+        orderBy: { createdAt: 'desc' },
+        include: { product: { select: { name: true } } },
+      }),
+      prisma.sale.findMany({
+        where: { userId, createdAt: { gte: since } },
+        select: { total: true, createdAt: true },
+        orderBy: { createdAt: 'asc' },
+      }),
+    ])
 
   const totalInventoryValue = products.reduce((sum, p) => sum + p.price * p.stock, 0)
   const lowStockCount = products.filter((p) => p.stock <= 5).length
 
-  const recentSales = await prisma.sale.findMany({
-    where: { userId },
-    take: 5,
-    orderBy: { createdAt: 'desc' },
-    include: { product: { select: { name: true } } },
-  })
+  // Build 14-day chart data, filling missing days with 0
+  const salesByDay = new Map<string, number>()
+  for (let i = 13; i >= 0; i--) {
+    const d = new Date()
+    d.setDate(d.getDate() - i)
+    salesByDay.set(d.toLocaleDateString('es', { month: 'short', day: 'numeric' }), 0)
+  }
+  for (const s of chartSales) {
+    const key = s.createdAt.toLocaleDateString('es', { month: 'short', day: 'numeric' })
+    salesByDay.set(key, (salesByDay.get(key) ?? 0) + s.total)
+  }
+  const chartData = Array.from(salesByDay.entries()).map(([date, total]) => ({ date, total }))
 
   return (
     <div className="space-y-6">
@@ -36,6 +59,8 @@ export default async function DashboardPage() {
         <StatCard label="Ventas totales" value={`$${(totalSales._sum.total ?? 0).toFixed(2)}`} icon="📈" />
         <StatCard label="Alertas activas" value={activeAlerts} icon="🔔" accent={activeAlerts > 0} />
       </div>
+
+      <SalesChart data={chartData} />
 
       {lowStockCount > 0 && (
         <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl p-4 text-yellow-800 dark:text-yellow-300 text-sm">

@@ -4,26 +4,48 @@ export default function ReportsPage() {
       <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Reportes</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5 space-y-3">
-          <h2 className="font-semibold text-gray-800 dark:text-gray-200">Inventario CSV</h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Exporta todos los productos con precio y stock.</p>
-          <a
-            href="/api/reports?type=inventory&format=csv"
-            download
-            className="inline-block bg-green-600 hover:bg-green-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
-          >
-            Descargar CSV
-          </a>
+          <h2 className="font-semibold text-gray-800 dark:text-gray-200">Inventario</h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Exporta todos los productos con precio, stock y categoría.
+          </p>
+          <div className="flex gap-2">
+            <a
+              href="/api/reports?type=inventory&format=csv"
+              download
+              className="inline-block bg-green-600 hover:bg-green-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+            >
+              CSV
+            </a>
+            <a
+              href="/api/reports?type=inventory&format=pdf"
+              download
+              className="inline-block bg-red-600 hover:bg-red-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+            >
+              PDF
+            </a>
+          </div>
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5 space-y-3">
-          <h2 className="font-semibold text-gray-800 dark:text-gray-200">Ventas CSV</h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Exporta el historial completo de ventas.</p>
-          <a
-            href="/api/reports?type=sales&format=csv"
-            download
-            className="inline-block bg-green-600 hover:bg-green-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
-          >
-            Descargar CSV
-          </a>
+          <h2 className="font-semibold text-gray-800 dark:text-gray-200">Ventas</h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Exporta el historial completo de ventas.
+          </p>
+          <div className="flex gap-2">
+            <a
+              href="/api/reports?type=sales&format=csv"
+              download
+              className="inline-block bg-green-600 hover:bg-green-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+            >
+              CSV
+            </a>
+            <a
+              href="/api/reports?type=sales&format=pdf"
+              download
+              className="inline-block bg-red-600 hover:bg-red-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+            >
+              PDF
+            </a>
+          </div>
         </div>
       </div>
     </div>
