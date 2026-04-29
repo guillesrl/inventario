@@ -11,17 +11,20 @@ Sistema de gestión de inventario para pequeñas tiendas. Construido con Next.js
 - Neon Serverless Postgres
 - NextAuth v5 (Google + Email magic link)
 - Recharts
+- React PDF
 
 ## Funcionalidades
 
 - Autenticación con Google o magic link por email
 - Dashboard con estadísticas: productos, valor de inventario, ventas totales y alertas
-- Gestión de productos con categorías, precio y stock
-- Alertas automáticas de stock bajo (≤5 unidades)
-- Registro de ventas con historial
-- Categorías con contador de productos asignados
+- Gestión de productos con búsqueda y filtro por categoría, paginación y soft-delete
+- Importación de productos desde CSV (crea o actualiza existentes)
+- Categorías con subcategorías (1 nivel de profundidad) y contador de productos
+- Registro de ventas con historial, filtro por rango de fechas y paginación
+- Alertas automáticas de stock bajo con página dedicada para marcarlas como resueltas
+- Reportes con gráfico de top 5 productos más vendidos
 - Exportación de reportes en CSV y PDF (inventario y ventas)
-- Soft-delete en productos
+- Loading skeletons en todas las rutas del dashboard
 - Dark mode por defecto
 
 ## Variables de entorno
