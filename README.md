@@ -32,8 +32,8 @@ Sistema de gestión de inventario para pequeñas tiendas. Construido con Next.js
 Crea un archivo `.env` con:
 
 ```env
-DATABASE_URL=postgresql://...pooler.neon.tech/neondb?sslmode=require
-DIRECT_URL=postgresql://...neon.tech/neondb?sslmode=require
+DATABASE_URL=postgresql://...pooler.neon.tech/neondb?sslmode=verify-full
+DIRECT_URL=postgresql://...neon.tech/neondb?sslmode=verify-full
 
 NEXTAUTH_URL=http://localhost:3000
 NEXTAUTH_SECRET=tu-secret
