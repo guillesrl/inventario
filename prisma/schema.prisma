@@ -71,6 +71,7 @@ model Category {
   name      String
   userId    String    @map("user_id")
   parentId  String?   @map("parent_id")
+  deletedAt DateTime? @map("deleted_at")
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   parent    Category?  @relation("CategoryTree", fields: [parentId], references: [id], onDelete: SetNull)
   children  Category[] @relation("CategoryTree")
@@ -79,7 +80,7 @@ model Category {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([userId, name])
+  @@index([userId, deletedAt])
   @@map("categories")
 }
 
