@@ -42,8 +42,8 @@ export async function POST(req: NextRequest) {
   if (rows.length === 0) {
     return NextResponse.json({ error: 'El archivo no contiene datos válidos' }, { status: 400 })
   }
-  if (rows.length > 500) {
-    return NextResponse.json({ error: 'El archivo supera el límite de 500 filas' }, { status: 413 })
+  if (rows.length > 1000) {
+    return NextResponse.json({ error: 'El archivo supera el límite de 1000 filas' }, { status: 413 })
   }
 
   const results = { created: 0, skipped: 0, errors: [] as string[] }
@@ -55,6 +55,18 @@ export async function POST(req: NextRequest) {
 
     if (!name || isNaN(price) || isNaN(stock)) {
       results.errors.push(`Fila inválida: ${name ?? '(sin nombre)'}`)
+      results.skipped++
+      continue
+    }
+
+    if (price <= 0) {
+      results.errors.push(`Producto "${name}": el precio debe ser mayor a 0`)
+      results.skipped++
+      continue
+    }
+
+    if (stock < 0) {
+      results.errors.push(`Producto "${name}": el stock no puede ser negativo`)
       results.skipped++
       continue
     }

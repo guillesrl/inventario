@@ -35,12 +35,23 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'name, price y stock son requeridos' }, { status: 400 })
   }
 
+  const numPrice = Number(price)
+  const numStock = Number(stock)
+
+  if (numPrice <= 0) {
+    return NextResponse.json({ error: 'El precio debe ser mayor a 0' }, { status: 400 })
+  }
+
+  if (numStock < 0) {
+    return NextResponse.json({ error: 'El stock no puede ser negativo' }, { status: 400 })
+  }
+
   const product = await prisma.product.create({
     data: {
       name,
       description,
-      price: Number(price),
-      stock: Number(stock),
+      price: numPrice,
+      stock: numStock,
       imageUrl,
       userId: session.user.id,
       categoryId: categoryId ?? null,
