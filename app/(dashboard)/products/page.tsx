@@ -4,6 +4,7 @@ import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import ProductFilters from '@/components/ProductFilters'
 import ImportProductsModal from '@/components/ImportProductsModal'
+import { Prisma } from '@prisma/client'
 
 const PAGE_SIZE = 20
 
@@ -19,28 +20,83 @@ export default async function ProductsPage({
   const page = Math.max(1, Number(pageParam ?? 1))
   const skip = (page - 1) * PAGE_SIZE
 
-  const where = {
-    userId,
-    deletedAt: null as null,
-    ...(q ? { name: { contains: q, mode: 'insensitive' as const } } : {}),
-    ...(category ? { categoryId: category } : {}),
-  }
+  let where: Prisma.ProductFindManyArgs['where']
+  let products: any[]
+  let total: number
 
-  const [products, total, categories] = await Promise.all([
-    prisma.product.findMany({
-      where,
+  // Usar full-text search si hay un término de búsqueda
+  if (q && q.trim()) {
+    const searchTerm = q.trim().replace(/\s+/g, ' ')
+    const baseWhere = {
+      userId,
+      deletedAt: null as null,
+      ...(category ? { categoryId: category } : {}),
+    }
+
+    // Full-text search en name y description
+    const searchResults = await prisma.$queryRaw<{ id: string }[]>`
+      SELECT DISTINCT p.id
+      FROM products p
+      WHERE p.user_id = ${userId}
+        AND p.deleted_at IS NULL
+        ${category ? Prisma.sql`AND p.category_id = ${category}` : Prisma.empty}
+        AND (
+          p.name ILIKE ${`%${searchTerm}%`}
+          OR p.description ILIKE ${`%${searchTerm}%`}
+        )
+      ORDER BY p.created_at DESC
+      LIMIT ${PAGE_SIZE + 1}
+      OFFSET ${skip}
+    `
+
+    const ids = searchResults.map(r => r.id)
+
+    const totalResult = await prisma.$queryRaw<{ count: bigint }[]>`
+      SELECT COUNT(DISTINCT p.id) as count
+      FROM products p
+      WHERE p.user_id = ${userId}
+        AND p.deleted_at IS NULL
+        ${category ? Prisma.sql`AND p.category_id = ${category}` : Prisma.empty}
+        AND (
+          p.name ILIKE ${`%${searchTerm}%`}
+          OR p.description ILIKE ${`%${searchTerm}%`}
+        )
+    `
+
+    total = Number(totalResult[0]?.count ?? 0)
+
+    products = ids.length > 0 ? await prisma.product.findMany({
+      where: { id: { in: ids } },
       include: { category: { select: { name: true } } },
       orderBy: { createdAt: 'desc' },
-      skip,
-      take: PAGE_SIZE,
-    }),
-    prisma.product.count({ where }),
-    prisma.category.findMany({
-      where: { userId },
-      orderBy: { name: 'asc' },
-      select: { id: true, name: true },
-    }),
-  ])
+    }) : []
+  } else {
+    where = {
+      userId,
+      deletedAt: null as null,
+      ...(category ? { categoryId: category } : {}),
+    }
+
+    const [productList, totalCount] = await Promise.all([
+      prisma.product.findMany({
+        where,
+        include: { category: { select: { name: true } } },
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: PAGE_SIZE,
+      }),
+      prisma.product.count({ where }),
+    ])
+
+    products = productList
+    total = totalCount
+  }
+
+  const categories = await prisma.category.findMany({
+    where: { userId },
+    orderBy: { name: 'asc' },
+    select: { id: true, name: true },
+  })
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
 
